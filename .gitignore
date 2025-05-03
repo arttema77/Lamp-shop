@@ -1,0 +1,12 @@
+Запуск.txt
+
+# Локальные или временные файлы
+*.log
+*.tmp
+*.bak
+*.swp
+
+# OS системные файлы
+.DS_Store
+Thumbs.db
+desktop.ini
