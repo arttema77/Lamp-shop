@@ -3,24 +3,14 @@
 # Поднимает FastAPI-приложение, подключает маршруты и инициализирует БД.
 # Запускается командой: uvicorn app.main:app --host 0.0.0.0 --port 80
 # ---------------------------------------------------------------------------
-from fastapi.middleware.cors import CORSMiddleware
+
 from fastapi import FastAPI, Depends, HTTPException, status
 from sqlmodel import Session
 from . import db, management as mgmt, schemas
 
 db.init_db()
-import app.seed
-
 app = FastAPI(title="Product Service")
 
-# ────────────────────── CORS ──────────────────────
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:8000"],  # адрес фронтенда
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-# ───────────────────────────────────────────────────
 
 def get_session():
     with Session(db.engine) as session:

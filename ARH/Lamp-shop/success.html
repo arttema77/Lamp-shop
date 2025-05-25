@@ -14,15 +14,10 @@
 <a href="index.html" class="btn">Вернуться в каталог</a>
 
 <script>
-/* 1) пытаемся взять ?order=12345 из адресной строки
-     2) если его нет (старый сценарий) — берём из localStorage */
-  const params = new URLSearchParams(location.search);
-  const id = params.get("order") || localStorage.getItem("lastOrderId");
-
+  // берём номер заказа, который сохранили в checkout.js
+  const id = localStorage.getItem("lastOrderId");
   document.getElementById("order-text").textContent =
-    id
-      ? `Ваш заказ №${id} успешно оформлен!`
-      : "Номер заказа не найден.";
+    id ? `Ваш заказ №${id} успешно оформлен!` : "Номер заказа не найден.";
 </script>
 
 </body>

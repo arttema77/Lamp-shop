@@ -1,25 +1,20 @@
+const API   = "http://localhost:8001";
+const cart  = JSON.parse(localStorage.getItem("cart") || "[]");
 const tbody = document.querySelector("#cart-table tbody");
-const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-let total = 0;
+let total   = 0;
 
-cart.forEach(item => {
-  const id = item.id;
-  const name = `Лампочка ${id}`;
-  const img = `assets/img/lamp.png`;
-  const price = 1000 + 50 * (id - 1);  // пример
-  const sum = price * item.qty;
-  total += sum;
+(async () => {
+  for (const {id, qty} of cart) {
+    const p   = await fetch(`${API}/products/${id}`).then(r=>r.ok?r.json():null);
+    if (!p) continue;                         // товар мог быть удалён админом
+    const sum = p.price * qty;
+    total    += sum;
 
-  tbody.insertAdjacentHTML("beforeend", `
-    <tr>
-      <td>
-        <img src="${img}" class="thumb" alt="" />
-        ${name}
-      </td>
-      <td>${item.qty}</td>
-      <td>${price} ₽</td>
-      <td>${sum} ₽</td>
-    </tr>`);
-});
-
-document.getElementById("total").textContent = `Итого: ${total} ₽`;
+    tbody.insertAdjacentHTML("beforeend",`
+      <tr>
+         <td><img class="thumb" src="${p.image_url}"> ${p.name}</td>
+         <td>${qty}</td><td>${p.price} ₽</td><td>${sum} ₽</td>
+      </tr>`);
+  }
+  document.getElementById("total").textContent = `Итого: ${total} ₽`;
+})();
