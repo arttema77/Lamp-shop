@@ -34,3 +34,20 @@ class OrderRead(BaseModel):
     status: str
     created_at: datetime
     items: list[OrderItemOut]
+
+
+from typing import Optional, List
+from uuid import UUID
+from sqlmodel import SQLModel
+
+class OrderItemUpdate(SQLModel):
+    product_id: Optional[UUID] = None
+    quantity:  Optional[int]  = None
+    price:     Optional[int]  = None        # если нужно менять цену позиции
+
+class OrderUpdate(SQLModel):
+    customer_name   : Optional[str]                 = None
+    customer_phone  : Optional[str]                 = None
+    customer_address: Optional[str]                 = None
+    status          : Optional[str]                 = None   # new | paid | shipped | done
+    items           : Optional[List[OrderItemUpdate]] = None

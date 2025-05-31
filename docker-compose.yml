@@ -1,20 +1,40 @@
 version: "3.9"
+
 services:
   db:
     image: postgres:16
-    environment: { POSTGRES_PASSWORD: lamp }
-    ports: ["5432:5432"]
+    environment:
+      POSTGRES_PASSWORD: lamp
+    ports:
+      - "5432:5432"
+    healthcheck:          # ⬅️  всё, что ниже, - относится к healthcheck
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 3s
+      retries: 10
 
   product:
     build: ./product-service
     environment:
-      DATABASE_URL: "postgresql+psycopg2://postgres:lamp@db:5432/postgres"
-    depends_on: [db]
-    ports: ["8001:80"]
+      DATABASE_URL: postgresql+psycopg2://postgres:lamp@db:5432/postgres
+    depends_on:           # ⬅️  ждём, пока db станет healthy
+      db:
+        condition: service_healthy
+    ports:
+      - "8001:80"
 
   order:
     build: ./order-service
     environment:
-      DATABASE_URL: "postgresql+psycopg2://postgres:lamp@db:5432/postgres"
-    depends_on: [db]
-    ports: ["8002:80"]
+      DATABASE_URL: postgresql+psycopg2://postgres:lamp@db:5432/postgres
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8002:80"
+
+  admin:
+    image: nginx:alpine
+    volumes:
+      - ./admin-panel:/usr/share/nginx/html:ro
+    ports:
+      - "8003:80"

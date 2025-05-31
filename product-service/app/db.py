@@ -1,20 +1,16 @@
-# ---------------------------------------------------------------------------
-# инициализация соединения с Postgres и создание таблиц.
-# Функция init_db() вызывается при старте контейнера, создавая таблицы,
-# если их ещё нет.
-# ---------------------------------------------------------------------------
+# product-service/app/db.py
+import uuid
+from sqlmodel import SQLModel, create_engine
 
-import os
-from sqlmodel import create_engine, SQLModel
-
-DATABASE_URL = os.getenv(
-    "DATABASE_URL",
-    "postgresql+psycopg2://postgres:lamp@localhost:5432/products",
-)
-
+# ------------------- engine & session -------------------
+DATABASE_URL = "postgresql+psycopg2://postgres:lamp@db:5432/postgres"
 engine = create_engine(DATABASE_URL, echo=False)
 
-
+# ------------------- init & seed ------------------------
 def init_db() -> None:
-    from .models import Product  # noqa
+    # 1) создаём структуру
     SQLModel.metadata.create_all(engine)
+
+    # 2) наполняем начальными данными
+    from . import seed
+    seed.fill(engine)                     # >>> вставка 20 лампочек и admin
